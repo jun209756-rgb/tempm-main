@@ -287,7 +287,7 @@ function EmailPanel({ address, onClose }: { address: string; onClose: () => void
     try {
       const res = await fetch(`${WORKER_URL}/api/emails?address=${encodeURIComponent(address)}`);
       if (res.ok) {
-        const d = await res.json();
+        const d = (await res.json()) as { emails?: any[] };
         const list = d.emails || [];
         setEmails(list);
         if (list.length > 0) setExpanded(list[0].id);
