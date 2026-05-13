@@ -95,7 +95,7 @@ export default function AdminPage() {
         localStorage.removeItem("admin_token");
         return;
       }
-      const data = await res.json();
+      const data = (await res.json()) as AdminConfig;
       setConfig(data);
     } catch {
       showToast("❌ 加载配置失败");
@@ -110,7 +110,7 @@ export default function AdminPage() {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (res.ok) {
-        setStats(await res.json());
+        setStats((await res.json()) as Stats);
       }
     } catch { /* ignore */ }
   }, [token]);
