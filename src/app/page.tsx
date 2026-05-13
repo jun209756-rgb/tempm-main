@@ -92,7 +92,7 @@ function GenerateEmailPanel({ tag, allDomains, adminToken, sseDisabled }: { tag:
   const loadTagQuota = useCallback(async () => {
     try {
       const res = await fetch(`${WORKER_URL}/api/tag-quota?label=${encodeURIComponent(tag)}`);
-      if (res.ok) setTagQuota(await res.json());
+      if (res.ok) setTagQuota((await res.json()) as any);
     } catch { /* ignore */ }
   }, [tag]);
 
@@ -287,7 +287,6 @@ function EmailPanel({ address, onClose }: { address: string; onClose: () => void
     try {
       const res = await fetch(`${WORKER_URL}/api/emails?address=${encodeURIComponent(address)}`);
       if (res.ok) {
-        // 🚀 Fix 1: Added proper type assertion here
         const d = (await res.json()) as { emails?: Email[] };
         const list = d.emails || [];
         setEmails(list);
@@ -542,7 +541,6 @@ function TagEmailsPanel({ tag, onConnStateChange }: { tag: string; onConnStateCh
 
     fetch(`${WORKER_URL}/api/tag-emails?tag=${encodeURIComponent(tag)}`, { cache: "no-store" })
       .then(r => r.json())
-      // 🚀 Fix 2: Added proper type here so Next.js build passes
       .then((d: unknown) => {
         const data = d as { emails?: Array<{ id: string; to: string; from: string; subject: string; timestamp: number; activationLink: string | null }> };
         if (cancelledRef.current) return;
@@ -762,7 +760,7 @@ export default function Home() {
     Promise.all([
       fetch(`${WORKER_URL}/api/tags`).then(r => r.json()),
       fetch(`${WORKER_URL}/api/config`).then(r => r.json()),
-    ]).then(([tagsData, configData]) => {
+    ]).then(([tagsData, configData]: [any, any]) => {
       setTagRules(tagsData.tagRules || []);
       const all = [
         ...(configData.domains || []),
@@ -790,7 +788,7 @@ export default function Home() {
       });
       if (res.status === 401) { sessionStorage.removeItem("accounts_admin_token"); setAdminToken(""); return; }
       if (res.ok) {
-        const d = await res.json() as { passwords: PwEntry[]; total: number };
+        const d = (await res.json()) as { passwords: PwEntry[]; total: number };
         setEntries(d.passwords || []);
         setTotalEntries(d.total || 0);
       }
