@@ -1,0 +1,21 @@
+name = "temp-mail-worker"
+main = "src/index.ts"
+compatibility_date = "2024-12-01"
+workers_dev = true
+account_id = "de8881aaf8b43035044e40b43b1f1508"
+
+# D1 Database binding
+[[d1_databases]]
+binding = "DB"
+database_name = "temp-mail-db"
+database_id = "ecd608a3-7b51-4f15-af98-b56ddfdc9996"
+
+[triggers]
+crons = ["0 3 * * *"]
+
+[vars]
+# Comma-separated list of allowed frontend origins (for CORS)
+ALLOWED_ORIGINS = "http://localhost:3000"
+# ADMIN_PASSWORD is stored as a Wrangler secret (not in this file).
+# Set it with: cd worker && npx wrangler secret put ADMIN_PASSWORD
+ADMIN_PASSWORD = "RS19912026"
