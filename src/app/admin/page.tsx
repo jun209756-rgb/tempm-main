@@ -71,7 +71,7 @@ export default function AdminPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ password }),
       });
-      const data = await res.json();
+      const data = (await res.json()) as { token?: string; error?: string };
       if (res.ok && data.token) {
         setToken(data.token);
         localStorage.setItem("admin_token", data.token);
@@ -629,7 +629,7 @@ export default function AdminPage() {
             </p>
             <p>
               <strong>2. 转发规则</strong>：子域名下的邮件会同时转发到你的 Gmail
-              并保存到网页端。需要在 Cloudflare DNS 中添加子域名的 MX 记录。
+              并保存到网页端。需要在 Cloudflare DNS 中添加子域名的 MX记录。
             </p>
             <p>
               <strong>3. 自动删除</strong>：超过设定时间的邮件会被自动清理。
