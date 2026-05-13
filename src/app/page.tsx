@@ -287,7 +287,8 @@ function EmailPanel({ address, onClose }: { address: string; onClose: () => void
     try {
       const res = await fetch(`${WORKER_URL}/api/emails?address=${encodeURIComponent(address)}`);
       if (res.ok) {
-        const d = (await res.json()) as { emails?: any[] };
+        // 🚀 Fix 1: Added proper type assertion here
+        const d = (await res.json()) as { emails?: Email[] };
         const list = d.emails || [];
         setEmails(list);
         if (list.length > 0) setExpanded(list[0].id);
@@ -541,9 +542,11 @@ function TagEmailsPanel({ tag, onConnStateChange }: { tag: string; onConnStateCh
 
     fetch(`${WORKER_URL}/api/tag-emails?tag=${encodeURIComponent(tag)}`, { cache: "no-store" })
       .then(r => r.json())
-      .then((d: { emails: Array<{ id: string; to: string; from: string; subject: string; timestamp: number; activationLink: string | null }> }) => {
+      // 🚀 Fix 2: Added proper type here so Next.js build passes
+      .then((d: unknown) => {
+        const data = d as { emails?: Array<{ id: string; to: string; from: string; subject: string; timestamp: number; activationLink: string | null }> };
         if (cancelledRef.current) return;
-        const emails = (d.emails || []).map(e => ({ ...e, toAddress: e.to }));
+        const emails = (data.emails || []).map(e => ({ ...e, toAddress: e.to }));
         setAllEmails(emails);
         setLastUpdated(new Date());
         if (emails.length > 0) lastTsRef.current = Math.max(...emails.map(e => e.timestamp));
